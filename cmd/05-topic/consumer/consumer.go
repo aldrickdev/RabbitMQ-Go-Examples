@@ -12,6 +12,7 @@ func failOnError(err error, msg string) {
 		log.Panicf("%s: %s", msg, err)
 	}
 }
+
 func main() {
 	conn, err := amqp.Dial("amqp://admin:admin@broker:5672")
 	failOnError(err, "Failed to connect to RabbitMQ")
@@ -22,13 +23,13 @@ func main() {
 	defer ch.Close()
 
 	err = ch.ExchangeDeclare(
-		"logs_direct", // name
-		"direct",      // type
-		true,          //durable
-		false,         // auto-deleted
-		false,         // internal
-		false,         // no-wait
-		nil,           // arguments
+		"logs_topic", // name
+		"topic",      // type
+		true,         //durable
+		false,        // auto-deleted
+		false,        // internal
+		false,        // no-wait
+		nil,          // arguments
 	)
 	failOnError(err, "Failed to declare an exchange")
 
@@ -54,9 +55,9 @@ func main() {
 	for _, s := range os.Args[1:] {
 		log.Printf("Binding queue %s to exchange %s with routing key %s", q.Name, "logs_direct", s)
 		err = ch.QueueBind(
-			q.Name,        // queue name
-			s,             // routing key
-			"logs_direct", //exchange
+			q.Name,       // queue name
+			s,            // routing key
+			"logs_topic", //exchange
 			false,
 			nil,
 		)

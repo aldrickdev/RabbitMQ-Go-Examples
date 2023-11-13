@@ -29,7 +29,7 @@ func bodyFrom(args []string) string {
 func severityFrom(args []string) string {
 	var s string
 	if (len(args) < 2) || os.Args[1] == "" {
-		s = "anonymous.info"
+		s = "info"
 	} else {
 		s = os.Args[1]
 	}
@@ -49,8 +49,8 @@ func main() {
 
 	// create an exhange
 	err = ch.ExchangeDeclare(
-		"logs_topics", // name
-		"topic",       // type
+		"logs_direct", // name
+		"direct",      // type
 		true,          //durable
 		false,         // auto-deleted
 		false,         // internal
@@ -65,7 +65,7 @@ func main() {
 	body := bodyFrom(os.Args)
 	err = ch.PublishWithContext(
 		ctx,
-		"logs_topic",          // exchance
+		"logs_direct",         // exchance
 		severityFrom(os.Args), // routing key
 		false,                 // mandatory
 		false,                 // immediate
